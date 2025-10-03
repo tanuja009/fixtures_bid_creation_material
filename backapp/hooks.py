@@ -15,6 +15,8 @@ fixtures = [
     # Custom Fields you added to standard DocTypes
     "Custom Field",
 
+    "User",
+
     # Client Scripts for any DocType
     "Client Script",
 
