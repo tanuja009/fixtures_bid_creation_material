@@ -1,0 +1,164 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-21 17:10:11.813723",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_vbb2",
+  "bid_title",
+  "bid_reference_number",
+  "bid_date",
+  "estimated_value",
+  "description",
+  "current_status",
+  "supporting_documents",
+  "amended_from",
+  "material_request",
+  "committe_member_column",
+  "committes_create_section",
+  "committe_member_tables_column",
+  "bis_creation_committe",
+  "finance_evalution_committe",
+  "technical_evalution_committe",
+  "tab_2_tab"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_vbb2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "Title of the Bid",
+   "fieldname": "bid_title",
+   "fieldtype": "Data",
+   "label": "Bid Title",
+   "no_copy": 1,
+   "options": "Bid Creation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "description": "Unique Bid Reference Number",
+   "fieldname": "bid_reference_number",
+   "fieldtype": "Data",
+   "label": "Bid Reference Number"
+  },
+  {
+   "description": "Date when the bid was created",
+   "fieldname": "bid_date",
+   "fieldtype": "Data",
+   "label": "Bid Date\t"
+  },
+  {
+   "description": "Estimated value of bid\n",
+   "fieldname": "estimated_value",
+   "fieldtype": "Currency",
+   "label": "Estimated Value\t"
+  },
+  {
+   "description": "Basic description of the bid\n",
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "depends_on": "\teval:doc.workflow_state == \"Approved\";",
+   "fieldname": "current_status",
+   "fieldtype": "Data",
+   "label": "Status",
+   "mandatory_depends_on": "eval:doc.type == \"Main\";",
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.status == \"Done\";"
+  },
+  {
+   "description": "Attachments if any\n\n",
+   "fieldname": "supporting_documents",
+   "fieldtype": "Attach",
+   "label": "Supporting Documents\t"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bid Creation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
+  },
+  {
+   "fieldname": "committe_member_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "committes_create_section",
+   "fieldtype": "Section Break",
+   "label": "Committes Create"
+  },
+  {
+   "fieldname": "committe_member_tables_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bis_creation_committe",
+   "fieldtype": "Table",
+   "label": "Bid Creation Committe",
+   "options": "Committee Member1"
+  },
+  {
+   "fieldname": "finance_evalution_committe",
+   "fieldtype": "Table",
+   "label": "Finance Evalution Committe",
+   "options": "Committee Member1"
+  },
+  {
+   "fieldname": "technical_evalution_committe",
+   "fieldtype": "Table",
+   "label": "Technical Evalution Committe",
+   "options": "Committee Member1"
+  },
+  {
+   "fieldname": "tab_2_tab",
+   "fieldtype": "Tab Break",
+   "label": "Tab 2"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-10-03 17:11:59.784322",
+ "modified_by": "Administrator",
+ "module": "Backapp",
+ "name": "Bid Creation",
+ "owner": "tanujapatidar01@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

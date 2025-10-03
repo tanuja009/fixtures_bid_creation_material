@@ -1,0 +1,112 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 1,
+  "modified": "2025-08-21 13:27:23.176428",
+  "module": null,
+  "name": "Bid Concept Note Check",
+  "script": "frappe.ui.form.on('Material Request', {\r\n    refresh: function(frm) {\r\n        if (frm.doc.docstatus === 1) {\r\n            frm.add_custom_button('Create Bid', function() {\r\n                if (frm.doc.concept_note) {\r\n                    frappe.call({\r\n                        method: 'frappe.client.get_value',\r\n                        args: {\r\n                            doctype: 'Concept Note',\r\n                            filters: { name: frm.doc.concept_note },\r\n                            fieldname: ['status']\r\n                        },\r\n                        callback: function(r) {\r\n                            if (r.message) {\r\n                                const fetched_status = r.message.status;\r\n                                console.log(\"Fetched Concept Note Status:\", fetched_status);\r\n                                if ((fetched_status || '').trim().toLowerCase() !== 'approved') {\r\n                                    frappe.msgprint('You can only create a Bid if the linked Concept Note is Approved.');\r\n                                } else {\r\n                                    frappe.new_doc('Bid Creation', {\r\n                                        material_request: frm.doc.name\r\n                                    });\r\n                                }\r\n                            } else {\r\n                                frappe.msgprint('Concept Note not found.');\r\n                            }\r\n                        }\r\n                    });\r\n                } else {\r\n                    frappe.msgprint('No Concept Note linked with this Material Request.');\r\n                }\r\n            }, 'Actions');\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 1,
+  "modified": "2025-08-21 13:26:23.091554",
+  "module": null,
+  "name": "Bid Memeber Table Open",
+  "script": "frappe.ui.form.on('Bid Creation', {\r\n    refresh: function(frm) {\r\n        frm.toggle_display('committee_members', false);\r\n    },\r\n    committee_type: function(frm) {\r\n        if (frm.doc.committee_type) {\r\n            frm.toggle_display('committee_members', true); \r\n        } else {\r\n            frm.toggle_display('committee_members', false);\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 1,
+  "modified": "2025-08-07 17:12:40.861584",
+  "module": null,
+  "name": "Status on Bid Creation",
+  "script": "frappe.ui.form.on('Bid Creation', {\r\n    refresh: function(frm) {\r\n        frm.set_value('current_status', frm.doc.workflow_state);\r\n    },\r\n    workflow_state: function(frm) {\r\n        frm.set_value('current_status', frm.doc.workflow_state);\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Material Request",
+  "enabled": 0,
+  "modified": "2025-08-08 16:42:05.839221",
+  "module": null,
+  "name": "Bid Creation for Material Request",
+  "script": "frappe.ui.form.on('Material Request', {\r\n    refresh: function(frm) {\r\n        if (frm.doc.docstatus === 1) {\r\n            frm.add_custom_button('Create Bid', function() {\r\n                // Correct: Object, not a string\r\n                frappe.db.exists('Bid Creation', { material_request: frm.doc.name })\r\n                    .then(function(exists) {\r\n                        if (exists) {\r\n                            frappe.msgprint('Bid already exists for this Material Request.');\r\n                        } else {\r\n                            frappe.new_doc('Bid Creation', {\r\n                                material_request: frm.doc.name\r\n                            });\r\n                        }\r\n                    });\r\n            }, 'Actions');\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 0,
+  "modified": "2025-08-29 13:35:42.520427",
+  "module": null,
+  "name": "chaiman selection right",
+  "script": "frappe.ui.form.on('Bid', {\r\n    validate: function(frm) {\r\n        // Sirf Procurement Officer role ke liye chale\r\n        if (frappe.user.has_role(\"Procurement Officer\")) {\r\n            \r\n            // Sirf jab state \"Approved by MD\" ho tab check kare\r\n            if (frm.doc.workflow_state === \"Approved\") {\r\n                \r\n                let chairman_count = 0;\r\n\r\n                // members child table loop\r\n                (frm.doc.members || []).forEach(function(row) {\r\n                    if (row.is_chairman) {\r\n                        chairman_count += 1;\r\n                    }\r\n                });\r\n\r\n                // Agar chairman select nahi hai\r\n                if (chairman_count === 0) {\r\n                    frappe.throw(__('Please select a Chairman before saving or submitting the Bid.'));\r\n                }\r\n\r\n                // Agar ek se zyada chairman select kar diye\r\n                if (chairman_count > 1) {\r\n                    frappe.throw(__('Only one Chairman can be selected.'));\r\n                }\r\n            }\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 1,
+  "modified": "2025-08-21 13:27:38.267892",
+  "module": "Custom",
+  "name": "show approve status on PO and PD Dashboard",
+  "script": "frappe.ui.form.on('Bid Creation', {\r\n    refresh: function(frm) {\r\n        if (frappe.user.has_role('PDofficer') || frappe.user.has_role('Procurement Officer')) {\r\n            if (frm.doc.status == \"Approved by MD\") {\r\n                frappe.msgprint(\"This Bid has been Approved by MD.\");\r\n            }\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Material Request",
+  "enabled": 0,
+  "modified": "2025-08-12 12:31:30.973745",
+  "module": "Custom",
+  "name": "Bid For Material Reaquest",
+  "script": "frappe.ui.form.on('Material Request', {\r\n    refresh(frm) {\r\n        if (frm.doc.docstatus === 1) {\r\n            frm.add_custom_button('Create Bid', () => {\r\n\r\n                // Check if a Bid Creation already exists for this Material Request\r\n                frappe.db.exists('Bid Creation', {\r\n                    material_request: frm.doc.name\r\n                }).then(exists => {\r\n                    if (exists) {\r\n                        // If exists, show message and stop\r\n                        frappe.msgprint('❗ A Bid already exists for this Material Request: ' + exists);\r\n                    } else {\r\n                        // Else, open a new Bid Creation form with material_request pre-filled\r\n                        frappe.new_doc('Bid Creation', {\r\n                            material_request: frm.doc.name\r\n                        });\r\n                    }\r\n                });\r\n\r\n            }, 'Actions'); // You can also remove 'Actions' if you want the button at top\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Material Request",
+  "enabled": 1,
+  "modified": "2025-08-12 12:58:20.587126",
+  "module": null,
+  "name": "Bid For Material Request",
+  "script": "frappe.ui.form.on('Material Request', {\r\n    refresh(frm) {\r\n        if (frm.doc.docstatus === 1) {\r\n            frm.add_custom_button('Create Bid', () => {\r\n\r\n                frappe.db.get_list('Bid Creation', {\r\n                    filters: {\r\n                        material_request: frm.doc.name\r\n                    },\r\n                    fields: ['name'],\r\n                    limit: 1\r\n                }).then(records => {\r\n                    if (records.length) {\r\n                        frappe.msgprint('❗ A Bid already exists for this Material Request: ' + records[0].name);\r\n                    } else {\r\n                        frappe.new_doc('Bid Creation', { material_request: frm.doc.name });\r\n                    }\r\n                });\r\n\r\n            }, 'Actions');\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 1,
+  "modified": "2025-08-21 13:25:44.496427",
+  "module": "Custom",
+  "name": "Select Chairman Script",
+  "script": "frappe.ui.form.on(\"Bid Creation\", {\r\n    before_workflow_action: function(frm, action) {\r\n        if (action === \"Select Chairman\") {\r\n            frappe.prompt([\r\n                {\r\n                    fieldtype: \"Link\",\r\n                    label: \"Select Chairman\",\r\n                    fieldname: \"chairman\",\r\n                    options: \"User\",\r\n                    reqd: 1,\r\n                    get_query: () => {\r\n                        return {\r\n                            filters: {\r\n                                \"name\": [\"in\", frm.doc.committee_members.map(r => r.user)]\r\n                            }\r\n                        };\r\n                    }\r\n                }\r\n            ], function(values){\r\n                frm.doc.committee_members.forEach(row => {\r\n                    row.is_chairman = (row.user === values.chairman) ? 1 : 0;\r\n                });\r\n                frm.refresh_field(\"committee_members\");\r\n                frappe.msgprint(\"Chairman selected successfully!\");\r\n            }, \"Select Committee Chairman\");\r\n            \r\n            throw \"Please select Chairman first!\";\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Bid Creation",
+  "enabled": 1,
+  "modified": "2025-10-03 17:11:27.513783",
+  "module": "Backapp",
+  "name": "Chairman selection right",
+  "script": "\r\n// frappe.ui.form.on('Committee Member1', {\r\n//     is_chairman: function(frm, cdt, cdn) {\r\n//         let row = locals[cdt][cdn];\r\n\r\n        \r\n//         if (!frappe.user.has_role(\"Managing Officer\")) {\r\n//             if (row.is_chairman) {\r\n//                 frappe.msgprint(\"Only Managing Officer can Chairman select\");\r\n//                 frappe.model.set_value(cdt, cdn, \"is_chairman\", 0);\r\n//             }\r\n//         }\r\n//     }\r\n// });\r\n\r\nfrappe.ui.form.on('Committee Member1', {\r\n    is_chairman: function(frm, cdt, cdn) {\r\n        let row = locals[cdt][cdn];\r\n\r\n        // 👉 केवल तब चले जब user ने अभी checkbox TRUE किया है\r\n        if (row.is_chairman !== 1) {\r\n            return;  // uncheck या refresh case → कुछ मत करो\r\n        }\r\n\r\n        // 👉 सिर्फ Managing Officer ही select कर सके\r\n        if (!frappe.user.has_role(\"Managing Officer\")) {\r\n            frappe.msgprint(\"केवल Managing Officer ही Chairman select कर सकता है।\");\r\n\r\n            // तुरंत वापस uncheck कर दो\r\n            frappe.model.set_value(cdt, cdn, \"is_chairman\", 0);\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ }
+]

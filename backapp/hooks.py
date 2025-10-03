@@ -5,8 +5,40 @@ app_description = "inx"
 app_email = "inx@inxeoz.com"
 app_license = "mit"
 
+
+
+
+# hooks.py
+
+# List of DocTypes / Customizations to export automatically
+fixtures = [
+    # Custom Fields you added to standard DocTypes
+    "Custom Field",
+
+    # Client Scripts for any DocType
+    "Client Script",
+
+    # Server Scripts
+    "Server Script",
+
+    # Workflows
+    "Workflow",
+
+    # Property Setters (any changes to standard DocTypes)
+    "Property Setter",
+
+    # Roles
+    "Role",
+
+    # Custom Permissions (if needed)
+    # Note: Permissions are usually part of Role / Custom Fields
+]
+
+
 # Apps
 # ------------------
+
+
 
 # required_apps = []
 
